@@ -1,0 +1,37 @@
+host:
+  image: sameersbn/gitlab:8.0.2
+  volumes:
+   - gitlab-data:/home/git/data
+  environment:
+   - GITLAB_PORT=80
+   - GITLAB_SSH_PORT=22
+   - GITLAB_SECRETS_DB_KEY_BASE=something-secret
+  links:
+   - postgresql:postgresql
+   - redis:redisio
+
+postgresql:
+  image: sameersbn/postgresql:9.4-3
+  volumes:
+   - gitlab-pgsql-data:/var/lib/postgresql
+  environment:
+   - DB_NAME=gitlabhq_production
+   - DB_USER=gitlab
+   - DB_PASS=password
+
+redis:
+  image: sameersbn/redis:latest
+  volumes:
+   - gitlab-redis-data:/var/lib/redis
+
+runner:
+  build: gitlab-ci-multi-runner-docker/
+  volumes:
+   - /var/run/docker.sock:/var/run/docker.sock
+  environment:
+   - CI_SERVER_URL=http://host/ci
+   - RUNNER_TOKEN=change_this
+   - RUNNER_DESCRIPTION=myrunner
+   - RUNNER_EXECUTOR=shell
+  links:
+   - host:host

@@ -1,0 +1,28 @@
+host:
+  extends:
+    file: docker-compose.yml
+    service: host
+  restart: always
+  ports:
+   - "80:80"
+   - "2222:22"
+  environment:
+   - GITLAB_SSH_PORT=2222
+
+postgresql:
+  extends:
+    file: docker-compose.yml
+    service: postgresql
+  restart: always
+
+redis:
+  extends:
+    file: docker-compose.yml
+    service: redis
+  restart: always
+
+runner:
+  extends:
+    file: docker-compose.yml
+    service: runner
+  restart: always
